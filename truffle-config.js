@@ -68,6 +68,7 @@ module.exports = {
         new HDWalletProvider({
           privateKeys,
           providerOrUrl: `https://goerli.infura.io/v3/080f820dc2234efdab99cbf29165bb39`,
+          numberOfAddresses: 2,
         }),
       network_id: 5, // Kovan's id
       gas: 5500000, // Ropsten has a lower block limit than mainnet

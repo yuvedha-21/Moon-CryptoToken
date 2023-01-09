@@ -50,7 +50,6 @@ contract TokenSale {
         // Make the transaction inside of the require
         // transfer returns a boolean value.
         require(token.transfer(msg.sender, _amount));
-
         // Transfer the ETH of the buyer to us
         ethFunds.transfer(msg.value);
         // Increase the amount of tokens sold

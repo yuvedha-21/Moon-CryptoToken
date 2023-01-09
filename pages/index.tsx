@@ -112,10 +112,8 @@ const Home: NextPage = () => {
     return r;
   };
   const buyTokens = async () => {
-    const big = BigInt(inputValue * 10 ** 18);
-    // const big = inputValue * 10 ** 18;
-    // web3.eth.getAccounts(console.log);
-    await contractFTS.buyToken(big, {
+    // const big = BigInt(inputValue * 10 ** 18);
+    await contractFTS.buyToken(inputValue, {
       from: account,
       value: inputValue * FTtoETH * 10 ** 18,
       gas: 500000,

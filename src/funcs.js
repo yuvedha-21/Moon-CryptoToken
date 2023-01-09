@@ -80,7 +80,7 @@ const loadWeb3 = async () => {
   }
   // Legacy dapp browsers...
   else if (window.web3) {
-    window.web3 = new Web3(web3.currentProvider);
+    window.web3 = new Web3(web3.ethereum);
     // Acccounts always exposed
     web3.eth.sendTransaction({
       /* ... */

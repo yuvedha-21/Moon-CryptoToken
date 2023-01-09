@@ -1,79 +1,222 @@
-import React, { Component } from "react";
-
-import ERC20_ABI from "./Token.json";
-
+import { useState, useEffect } from "react";
 import { ethers } from "ethers";
+import erc20abi from "./Token.json";
+// import ErrorMessage from "./ErrorMessage";
+import TxList from "./TxList";
 
-class Metamask extends Component {
-  constructor(props) {
-    super(props);
+export default function App() {
+  const [txs, setTxs] = useState([]);
+  const [contractListened, setContractListened] = useState();
+  const [error, setError] = useState();
+  const [contractInfo, setContractInfo] = useState({
+    address: "-",
+    tokenName: "-",
+    tokenSymbol: "-",
+    totalSupply: "-",
+  });
+  const [balanceInfo, setBalanceInfo] = useState({
+    address: "-",
+    balance: "-",
+  });
 
-    this.state = {};
-  }
-
-  async connectToMetamask() {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const accounts = await provider.send("eth_requestAccounts", []);
-    const balance = await provider.getBalance(accounts[0]);
-    const balanceInEther = ethers.utils.formatEther(balance);
-    const block = await provider.getBlockNumber();
-
-    provider.on("block", (block) => {
-      this.setState({ block });
-    });
-
-    // this.setState({
-    //   selectedAddress: accounts[0],
-    //   balance: balanceInEther,
-    //   block,
-    // });
-
-    const daiContract = new ethers.Contract(
-      "0xfEE8831E3deAfF924D6293A47fBDcB0AC719260B",
-      ERC20_ABI,
-      provider
-    );
-    const tokenName = await daiContract.name();
-    const tokenBalance = await daiContract.balanceOf(accounts[0]);
-    const tokenUnits = await daiContract.decimals();
-    const tokenBalanceInEther = ethers.utils.formatUnits(
-      tokenBalance,
-      tokenUnits
-    );
-
-    this.setState({
-      selectedAddress: accounts[0],
-      balance: balanceInEther,
-      block,
-      tokenName,
-      tokenBalanceInEther,
-    });
-  }
-
-  renderMetamask() {
-    if (!this.state.selectedAddress) {
-      return (
-        <button onClick={() => this.connectToMetamask()}>
-          Connect to Metamask
-        </button>
+  useEffect(() => {
+    if (contractInfo.address !== "-") {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const erc20 = new ethers.Contract(
+        contractInfo.address,
+        erc20abi,
+        provider
       );
-    } else {
-      return (
-        <div>
-          <p>Welcome {this.state.selectedAddress}</p>
-          <p>Your ETH Balance is: {this.state.balance}</p>
-          <p>Current ETH Block is: {this.state.block}</p>
-          <p>
-            Balance of {this.state.tokenName} is:{" "}
-            {this.state.tokenBalanceInEther}
-          </p>
-        </div>
-      );
+
+      erc20.on("Transfer", (from, to, amount, event) => {
+        console.log({ from, to, amount, event });
+
+        setTxs((currentTxs) => [
+          ...currentTxs,
+          {
+            txHash: event.transactionHash,
+            from,
+            to,
+            amount: String(amount),
+          },
+        ]);
+      });
+      setContractListened(erc20);
+
+      return () => {
+        contractListened.removeAllListeners();
+      };
     }
-  }
+  }, [contractInfo.address]);
 
-  render() {
-    return <div>{this.renderMetamask()}</div>;
-  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const data = new FormData(e.target);
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+
+    const erc20 = new ethers.Contract(data.get("addr"), erc20abi, provider);
+
+    const tokenName = await erc20.name();
+    const tokenSymbol = await erc20.symbol();
+    let totalSupply = await erc20.totalSupply();
+
+    setContractInfo({
+      address: data.get("addr"),
+      tokenName,
+      tokenSymbol,
+      totalSupply: totalSupply / 10 ** 18,
+    });
+  };
+
+  const getMyBalance = async () => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+    const erc20 = new ethers.Contract(contractInfo.address, erc20abi, provider);
+    const signer = await provider.getSigner();
+    const signerAddress = await signer.getAddress();
+    let balance = await erc20.balanceOf(signerAddress);
+
+    setBalanceInfo({
+      address: signerAddress,
+      balance: String(balance / 10 ** 18),
+    });
+  };
+
+  const handleTransfer = async (e) => {
+    e.preventDefault();
+    const data = new FormData(e.target);
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+    const signer = await provider.getSigner();
+    const erc20 = new ethers.Contract(contractInfo.address, erc20abi, signer);
+    await erc20.transfer(data.get("recipient"), data.get("amount"));
+  };
+
+  return (
+    <div className="grid grid-cols-1 gap-2 md">
+      <div>
+        <form className="m-4" onSubmit={handleSubmit}>
+          <div className="credit-card w-full lg:w-3/4 sm:w-auto shadow-lg mx-auto rounded-xl bg-white">
+            <main className="mt-4 p-4">
+              <h1 className="text-xl font-semibold text-gray-700 text-center">
+                Read from smart contract
+              </h1>
+              <div className="">
+                <div className="my-3">
+                  <input
+                    type="text"
+                    name="addr"
+                    className="input input-bordered block w-full focus:ring focus:outline-none"
+                    placeholder="ERC20 contract address"
+                  />
+                </div>
+              </div>
+            </main>
+            <footer className="p-4">
+              <button
+                type="submit"
+                className="btn submit-button focus:ring focus:outline-none w-full"
+              >
+                Get token info
+              </button>
+            </footer>
+            <div className="px-4">
+              <div className="overflow-x-auto">
+                <table className="table w-full">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Symbol</th>
+                      <th>Total supply</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th>{contractInfo.tokenName}</th>
+                      <td>{contractInfo.tokenSymbol}</td>
+                      <td>{String(contractInfo.totalSupply)} moons</td>
+                      <td>{contractInfo.deployedAt}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div className="p-4">
+              <button
+                onClick={getMyBalance}
+                type="submit"
+                className="btn submit-button focus:ring focus:outline-none w-full"
+              >
+                Get my balance
+              </button>
+            </div>
+            <div className="px-4">
+              <div className="overflow-x-auto">
+                <table className="table w-full">
+                  <thead>
+                    <tr>
+                      <th>Address</th>
+                      <th>Balance</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th>{balanceInfo.address}</th>
+                      <td>{balanceInfo.balance} moons</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </form>
+        <div className="m-4 credit-card w-full lg:w-1/2 sm:w-auto shadow-lg mx-auto rounded-xl bg-white">
+          <div className="mt-4 p-4">
+            <h1 className="text-xl font-semibold text-gray-700 text-center">
+              Buy Tokens
+            </h1>
+
+            <form onSubmit={handleTransfer}>
+              <div className="my-3">
+                <input
+                  type="text"
+                  name="recipient"
+                  className="input input-bordered block w-full focus:ring focus:outline-none"
+                  placeholder="Recipient address"
+                />
+              </div>
+              <div className="my-3">
+                <input
+                  type="text"
+                  name="amount"
+                  className="input input-bordered block w-full focus:ring focus:outline-none"
+                  placeholder="Amount to transfer"
+                />
+              </div>
+              <footer className="p-4">
+                <button
+                  type="submit"
+                  className="btn submit-button focus:ring focus:outline-none w-full"
+                >
+                  Buy
+                </button>
+              </footer>
+            </form>
+          </div>
+        </div>
+      </div>
+      {/* <div>
+        <div className="m-4 credit-card w-full lg:w-3/4 sm:w-auto shadow-lg mx-auto rounded-xl bg-white">
+          <div className="mt-4 p-4">
+            <h1 className="text-xl font-semibold text-gray-700 text-center">
+              Recent transactions
+            </h1>
+            <p>
+              <TxList txs={txs} />
+            </p>
+          </div>
+        </div>
+      </div> */}
+    </div>
+  );
 }
-export default Metamask;

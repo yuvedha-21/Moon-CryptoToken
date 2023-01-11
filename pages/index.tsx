@@ -113,11 +113,14 @@ const Home: NextPage = () => {
   };
   const buyTokens = async () => {
     const big = BigInt(inputValue * 10 ** 18);
+    console.log("passed last error");
+
     await contractFTS.buyToken(big, {
       from: account,
       value: inputValue * FTtoETH * 10 ** 18,
-      gas: 500000,
+      gasLimit: 500000,
     });
+
     setIsOpen(false);
     setRefresh(true);
   };

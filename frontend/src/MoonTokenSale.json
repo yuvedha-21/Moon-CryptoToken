@@ -2,8 +2,8 @@
   {
     "inputs": [
       {
-        "internalType": "contract Token",
-        "name": "_token",
+        "internalType": "contract MoonToken",
+        "name": "tokenAddress",
         "type": "address"
       }
     ],
@@ -45,10 +45,10 @@
   },
   {
     "inputs": [],
-    "name": "token",
+    "name": "moonToken",
     "outputs": [
       {
-        "internalType": "contract Token",
+        "internalType": "contract MoonToken",
         "name": "",
         "type": "address"
       }

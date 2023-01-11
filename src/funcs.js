@@ -1,6 +1,6 @@
 import Web3 from "web3";
-import Token from "../build/contracts/Token.json";
-import TokenSale from "../build/contracts/TokenSale.json";
+import Token from "../build/contracts/MoonToken.json";
+import TokenSale from "../build/contracts/MoonTokenSale.json";
 const contract = require("@truffle/contract");
 
 export const load = async () => {

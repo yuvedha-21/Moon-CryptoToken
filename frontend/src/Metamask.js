@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import moonT from "./MoonToken.json";
 import moonTS from "./MoonTokenSale.json";
-import ErrorMessage from "./ErrorMessage";
-// import TxList from "./TxList";
 
 export default function App() {
   const [txs, setTxs] = useState([]);

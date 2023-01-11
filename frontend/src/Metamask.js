@@ -1,12 +1,9 @@
 import { useState, useEffect } from "react";
-import { ethers } from "ethers";
+import { ethers } from "ethers/lib";
 import moonT from "./MoonToken.json";
 import moonTS from "./MoonTokenSale.json";
 
 export default function App() {
-  const [txs, setTxs] = useState([]);
-  const [contractListened, setContractListened] = useState();
-  const [error, setError] = useState();
   const [contractInfo, setContractInfo] = useState({
     address: "-",
     tokenName: "-",
@@ -22,25 +19,6 @@ export default function App() {
     if (contractInfo.address !== "-") {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const erc20 = new ethers.Contract(contractInfo.address, moonT, provider);
-
-      erc20.on("Transfer", (from, to, amount, event) => {
-        console.log({ from, to, amount, event });
-
-        setTxs((currentTxs) => [
-          ...currentTxs,
-          {
-            txHash: event.transactionHash,
-            from,
-            to,
-            amount: String(amount),
-          },
-        ]);
-      });
-      setContractListened(erc20);
-
-      return () => {
-        contractListened.removeAllListeners();
-      };
     }
   }, [contractInfo.address]);
 
@@ -88,8 +66,6 @@ export default function App() {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     await provider.send("eth_requestAccounts", []);
     const signer = await provider.getSigner();
-    const signerAddress = await signer.getAddress();
-    let amount = BigInt(data.get("amount"));
     const contract = new ethers.Contract(
       "0x19A285646c234B6F5950870eeFe9201626Ab1d33",
       moonTS,

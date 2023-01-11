@@ -45,21 +45,22 @@ export default function App() {
     });
   };
 
-  // const getMyBalance = async () => {
-  //   const provider = new ethers.providers.Web3Provider(window.ethereum);
-  //   await provider.send("eth_requestAccounts", []);
-  //   const erc20 = new ethers.Contract(contractInfo.address, moonT, provider);
-  //   const signer = await provider.getSigner();
+  const getMyBalance = async () => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+    const erc20 = new ethers.Contract(contractInfo.address, moonT, provider);
+    const signer = await provider.getSigner();
 
-  //   const signerAddress = await signer.getAddress();
-  //   let balance = await erc20.balanceOf(signerAddress);
+    const signerAddress = await signer.getAddress();
+    let balance = await erc20.balanceOf(signerAddress);
 
-  //   setBalanceInfo({
-  //     address: signerAddress,
-  //     balance: String(balance / 10 ** 18),
-  //   });
-  // };
+    setBalanceInfo({
+      address: signerAddress,
+      balance: String(balance / 10 ** 18),
+    });
+  };
   /* global BigInt */
+
   const handleTransfer = async (e) => {
     e.preventDefault();
     let data = new FormData(e.target);
@@ -104,17 +105,17 @@ export default function App() {
     //   BigInt(data.get("amount") * ftETH * 10 ** 18)
     // );
   };
-
-  return (
-    <div className="grid">
-      <div>
-        <form className="m-4" onSubmit={handleSubmit}>
-          <div className=" lg:w-1/2 sm:w-auto shadow-lg mx-auto rounded-xl bg-white">
-            <main className="mt-4 p-4">
-              <h1 className="text-xl font-semibold text-gray-700 text-center">
-                Read from smart contract
-              </h1>
-              {/* <div className="">
+  if (window.ethereum) {
+    return (
+      <div className="grid">
+        <div>
+          <form className="m-4" onSubmit={handleSubmit}>
+            <div className=" lg:w-1/2 sm:w-auto shadow-lg mx-auto rounded-xl bg-white">
+              <main className="mt-4 p-4">
+                <h1 className="text-xl font-semibold text-gray-700 text-center">
+                  <b>Get Your Moon!!</b>
+                </h1>
+                {/* <div className="">
                 <div className="my-3">
                   <input
                     type="text"
@@ -124,91 +125,83 @@ export default function App() {
                   />
                 </div>
               </div> */}
-            </main>
-            <footer className="p-4">
-              <button type="submit" className="btn">
-                Get token info
-              </button>
-            </footer>
-            <div className="px-4">
-              <div className="overflow-x-auto">
-                <table className="table w-full">
-                  <thead>
-                    <tr>
-                      <th>Name</th>
-                      <th>Symbol</th>
-                      <th>Total supply</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <th>{contractInfo.tokenName}</th>
-                      <td>{contractInfo.tokenSymbol}</td>
-                      <td>{String(contractInfo.totalSupply)} moons</td>
-                      <td>{contractInfo.deployedAt}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            {/* <div className="p-4">
-              <button onClick={getMyBalance} type="submit" className="btn ">
-                Pre-Sale Token Details
-              </button>
-            </div> */}
-            {/* <div className="px-4">
-              <div className="overflow-x-auto">
-                <table className="table w-full">
-                  <thead>
-                    <tr>
-                      <th>Address</th>
-                      <th>Token Balance</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <th>0xE30FC6a9EAd25e0281fCf4615bDBb6970900Ca27</th>
-                      <td>{balanceInfo.balance} moons</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div> */}
-          </div>
-        </form>
-        <div className="m-4 credit-card w-full lg:w-1/2 sm:w-auto shadow-lg mx-auto rounded-xl bg-white">
-          <div className="mt-4 p-4">
-            <h1 className="text-xl font-semibold text-gray-700 text-center">
-              Buy Tokens
-            </h1>
-
-            <form onSubmit={handleTransfer}>
-              <div className="my-3">
-                <input
-                  type="text"
-                  name="recipient"
-                  className="input input-bordered block w-full focus:ring focus:outline-none"
-                  placeholder="Recipient address"
-                />
-              </div>
-              <div className="my-3">
-                <input
-                  type="text"
-                  name="amount"
-                  className="input input-bordered block w-full focus:ring focus:outline-none"
-                  placeholder="Amount to transfer"
-                />
-              </div>
+              </main>
               <footer className="p-4">
-                <button type="submit" className="btn ">
-                  Buy Token
+                <button type="submit" className="btn">
+                  Get token info
                 </button>
               </footer>
-            </form>
+              <div className="px-4">
+                <div className="overflow-x-auto">
+                  <table className="table w-full">
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Symbol</th>
+                        <th>Total supply</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <th>{contractInfo.tokenName}</th>
+                        <td>{contractInfo.tokenSymbol}</td>
+                        <td>{String(contractInfo.totalSupply)} moons</td>
+                        <td>{contractInfo.deployedAt}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div className="p-4">
+                <button onClick={getMyBalance} type="submit" className="btn ">
+                  Current Account Details
+                </button>
+              </div>
+              <div className="px-4">
+                <div className="overflow-x-auto">
+                  <table className="table w-full">
+                    <thead>
+                      <tr>
+                        <th>Address</th>
+                        <th>Token Balance</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <th>{balanceInfo.address}</th>
+                        <td>{balanceInfo.balance} moons</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </form>
+          <div className="m-4 credit-card w-full lg:w-1/2 sm:w-auto shadow-lg mx-auto rounded-xl bg-white">
+            <div className="mt-4 p-4">
+              <h1 className="text-xl font-semibold text-gray-700 text-center">
+                Buy Tokens
+              </h1>
+
+              <form onSubmit={handleTransfer}>
+                <div className="my-3">
+                  <input
+                    type="text"
+                    name="amount"
+                    className="input input-bordered block w-full focus:ring focus:outline-none"
+                    placeholder="Enter Moon count"
+                  />
+                </div>
+                <footer className="p-4">
+                  <button type="submit" className="btn ">
+                    Buy Token
+                  </button>
+                </footer>
+              </form>
+            </div>
           </div>
         </div>
-      </div>
-      {/* <div>
+        {/* <div>
         <div className="m-4 credit-card w-full lg:w-3/4 sm:w-auto shadow-lg mx-auto rounded-xl bg-white">
           <div className="mt-4 p-4">
             <h1 className="text-xl font-semibold text-gray-700 text-center">
@@ -220,6 +213,22 @@ export default function App() {
           </div>
         </div>
       </div> */}
-    </div>
-  );
+      </div>
+    );
+  } else {
+    return (
+      <div className="grid">
+        <div className="mt-4 p-4 lg:w-1/2 sm:w-auto shadow-lg mx-auto rounded-xl bg-white">
+          <h1 className="text-xl font-semibold text-gray-700 text-center">
+            please install metamask and setup your wallet to proceed
+          </h1>
+        </div>
+        <div className="mt-4 p-4 lg:w-1/2 sm:w-auto shadow-lg mx-auto rounded-xl bg-white text-center">
+          <a href="https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn">
+            <b>Click here to install Metamask</b>
+          </a>
+        </div>
+      </div>
+    );
+  }
 }

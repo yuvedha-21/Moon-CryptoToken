@@ -161,13 +161,12 @@ export default function App() {
               <footer className="p-4">
                 <button
                   type="submit"
-                  className="btn"
                   onClick={() => {
                     handleSubmit();
                     connectWallet();
                   }}
                 >
-                  Get token info
+                  <b>Token Details</b>
                 </button>
               </footer>
               <div className="px-4">

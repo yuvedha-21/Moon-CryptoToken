@@ -133,14 +133,40 @@ export default function App() {
       <div className="grid">
         <div>
           <div className=" lg:w-1/2 sm:w-auto shadow-lg mx-auto rounded-xl bg-white">
-            <div className="m-4">
-              {/* <main className="mt-4 p-4"> */}
-              <h1 className="text-xl font-semibold text-gray-700 text-center">
-                <b>Get Your Moon!!</b>
+            {/* <main className="mt-4 p-4"> */}
+            <h1 className="text-xl font-semibold text-gray-700 text-center">
+              <b>Get Your Moon!!</b>
+            </h1>
+            {/* </main> */}
+            <div className="p-4  ">
+              <button
+                onClick={() => {
+                  handleSubmit();
+                  connectWallet();
+                  getMyBalance();
+                }}
+                type="submit"
+                className="btn "
+              >
+                Connect Wallet
+              </button>
+              <div>
+                <br></br>
+              </div>
+              <h1 className="text-l font-semibold text-gray-500 ">
+                Connected with {walletInfo.address}
               </h1>
-              {/* </main> */}
+            </div>
+            <div className="m-4">
               <footer className="p-4">
-                <button type="submit" className="btn" onClick={handleSubmit}>
+                <button
+                  type="submit"
+                  className="btn"
+                  onClick={() => {
+                    handleSubmit();
+                    connectWallet();
+                  }}
+                >
                   Get token info
                 </button>
               </footer>
@@ -167,20 +193,10 @@ export default function App() {
                 </div>
               </div>
             </div>
-            <div className="p-4  ">
-              <button onClick={connectWallet} type="submit" className="btn ">
-                Connect Wallet
-              </button>
-              <div>
-                <br></br>
-              </div>
-              <h1 className="text-l font-semibold text-gray-500 ">
-                Connected with {walletInfo.address}
-              </h1>
-            </div>
+
             <div>
               <div className="p-4">
-                <button type="button" className="btn" onClick={getMyBalance}>
+                <button type="submit" className="btn" onClick={getMyBalance()}>
                   Get Account Balance
                 </button>
               </div>

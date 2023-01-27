@@ -48,5 +48,8 @@
     "url": "https://github.com/yuvedha-21/Moon-CryptoToken/issues"
   },
   "homepage": "https://github.com/yuvedha-21/Moon-CryptoToken#readme",
+  "devDependencies": {
+    "mocha": "^10.1.0"
+  },
   "description": ""
 }

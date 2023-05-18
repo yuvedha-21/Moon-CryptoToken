@@ -72,7 +72,7 @@ module.exports = {
           providerOrUrl: `https://goerli.infura.io/v3/080f820dc2234efdab99cbf29165bb39`,
           numberOfAddresses: 2,
         }),
-      network_id: 5, // Kovan's id
+      network_id: 5,
       gas: 5500000, // Ropsten has a lower block limit than mainnet
       confirmations: 2, // # of confs to wait between deployments. (default: 0)
       timeoutBlocks: 200, // # of blocks before a deployment times out  (minimum/default: 50)

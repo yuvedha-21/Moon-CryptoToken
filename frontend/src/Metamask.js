@@ -143,6 +143,7 @@ export default function App() {
                 onClick={() => {
                   handleSubmit();
                   connectWallet();
+                  console.log();
                   getMyBalance();
                 }}
                 type="submit"
@@ -192,7 +193,6 @@ export default function App() {
                 </div>
               </div>
             </div>
-
             <div>
               <div className="p-4">
                 <button type="submit" className="btn" onClick={getMyBalance()}>
